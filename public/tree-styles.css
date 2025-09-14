@@ -1,0 +1,168 @@
+/* Estilos para el árbol jerárquico de unidades compartidas */
+
+.tree-container {
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid #ecf0f1;
+    border-radius: 6px;
+    padding: 15px;
+    background: white;
+}
+
+.tree-node {
+    margin: 2px 0;
+}
+
+.tree-item {
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.tree-item:hover {
+    background-color: #ecf0f1;
+}
+
+.tree-item.selected {
+    background-color: #3498db;
+    color: white;
+}
+
+.tree-item.selected:hover {
+    background-color: #2980b9;
+}
+
+.tree-item.drive {
+    font-weight: bold;
+    color: #2c3e50;
+    border-left: 4px solid #3498db;
+}
+
+.tree-item.folder {
+    color: #7f8c8d;
+    border-left: 2px solid #bdc3c7;
+}
+
+.tree-item.clickable {
+    cursor: pointer;
+}
+
+.tree-item.clickable:hover {
+    background-color: #e8f4fd;
+    transform: translateX(2px);
+}
+
+.expand-icon {
+    font-size: 12px;
+    color: #7f8c8d;
+    transition: transform 0.2s;
+    min-width: 12px;
+    font-family: monospace;
+}
+
+.tree-children {
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    max-height: 1000px;
+}
+
+.tree-children.collapsed {
+    max-height: 0;
+}
+
+.level-0 {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.level-1 {
+    color: #34495e;
+}
+
+.level-2 {
+    color: #5d6d7e;
+}
+
+.level-3 {
+    color: #85929e;
+}
+
+.no-drives {
+    text-align: center;
+    color: #7f8c8d;
+    font-style: italic;
+    padding: 20px;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .tree-container {
+        max-height: 400px;
+        padding: 10px;
+    }
+    
+    .tree-item {
+        padding: 6px 8px;
+        font-size: 13px;
+    }
+    
+    .tree-item.clickable:hover {
+        transform: none;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tree-node {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Mejoras visuales */
+.tree-item.drive::before {
+    content: "📁";
+    margin-right: 4px;
+}
+
+.tree-item.folder::before {
+    content: "📂";
+    margin-right: 4px;
+}
+
+/* Estados de carga */
+.loading-tree {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: #7f8c8d;
+}
+
+.loading-tree::after {
+    content: "Cargando árbol de unidades...";
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}

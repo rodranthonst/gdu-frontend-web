@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Unidades Compartidas</title>
+    <link rel="stylesheet" href="tree-styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4285f4;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #4285f4;
+        }
+
+        .logout-btn {
+            background: #ea4335;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: #d33b2c;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .section {
+            background: white;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #3367d6;
+        }
+
+        .btn-success {
+            background: #34a853;
+        }
+
+        .btn-success:hover {
+            background: #2d8f47;
+        }
+
+        .section-content {
+            padding: 1.5rem;
+        }
+
+        .drives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .drive-card {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .drive-card:hover {
+            border-color: #4285f4;
+            box-shadow: 0 4px 8px rgba(66, 133, 244, 0.2);
+        }
+
+        .drive-card.selected {
+            border-color: #4285f4;
+            background: #f8f9ff;
+        }
+
+        .drive-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .drive-info {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.3rem;
+        }
+
+        .folder-tree {
+            margin-top: 1rem;
+        }
+
+        .folder-item {
+            padding: 0.5rem;
+            margin: 0.2rem 0;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .folder-item:hover {
+            background: #f0f0f0;
+        }
+
+        .folder-icon {
+            width: 16px;
+            height: 16px;
+            color: #fbbc05;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .managers-list {
+            margin-top: 0.5rem;
+        }
+
+        .manager-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .remove-manager {
+            background: #ea4335;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4285f4;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .sync-info {
+            background: #e3f2fd;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .sync-status {
+            font-weight: 600;
+            color: #1976d2;
+        }
+
+        .breadcrumb {
+            padding: 0.5rem 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            📁 Gestor de Unidades
+        </div>
+        <div class="user-info">
+            <img id="userAvatar" class="user-avatar" src="" alt="Avatar">
+            <span id="userName"></span>
+            <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <div class="container">
+
+
+        <!-- Unidades Compartidas -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Unidades Compartidas</h2>
+                <button class="btn btn-success" onclick="openCreateDriveModal()">➕ Nueva Unidad</button>
+            </div>
+            <div class="section-content">
+                <div id="drivesContainer" class="tree-container loading">
+                    <div class="spinner"></div>
+                    <p>Cargando unidades compartidas...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Información de Unidad -->
+        <div class="section" id="driveInfoSection" style="display: none;">
+            <div class="section-header">
+                <h2 class="section-title">Información de la Unidad</h2>
+            </div>
+            <div class="section-content">
+                <div id="driveInfo">
+                    <div class="loading">Selecciona una unidad compartida para ver su información</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para crear unidad compartida -->
+    <div id="createDriveModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Crear Nueva Unidad Compartida</h3>
+                <button class="close" onclick="closeModal('createDriveModal')">&times;</button>
+            </div>
+            <form id="createDriveForm">
+                <div class="form-group">
+                    <label class="form-label">Nombre de la Unidad:</label>
+                    <input type="text" id="driveName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Managers (emails separados por coma):</label>
+                    <input type="text" id="driveManagers" class="form-input" placeholder="usuario1@ejemplo.com, usuario2@ejemplo.com">
+                    <small>Opcional: Usuarios que tendrán permisos de administrador</small>
+                </div>
+                <div style="text-align: right; margin-top: 1.5rem;">
+                    <button type="button" class="btn" style="background: #666; margin-right: 1rem;" onclick="closeModal('createDriveModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Crear Unidad</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <script src="app.js"></script>
+</body>
+</html>
