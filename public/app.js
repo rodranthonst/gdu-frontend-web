@@ -249,9 +249,8 @@ function renderTreeStructure(tree, container, level = 0) {
             if (hasChildren) {
                 toggleTreeNode(nodeContainer, nodeElement);
             }
-            if (node.drive || !hasChildren) {
-                selectTreeNode(node, nodeElement);
-            }
+            // Permitir seleccionar cualquier nodo para crear unidades dentro de él
+            selectTreeNode(node, nodeElement);
         });
         
         nodeContainer.appendChild(nodeElement);
@@ -329,7 +328,6 @@ function showDriveInfo(drive) {
             <div class="drive-info">
                 <h3>Unidad Seleccionada: ${drive.name}</h3>
                 <p><strong>ID:</strong> ${drive.id}</p>
-                <p><strong>Última sincronización:</strong> ${drive.lastSync || 'No disponible'}</p>
                 <p><strong>Estado:</strong> ${drive.status || 'Activa'}</p>
             </div>
         `;
@@ -363,7 +361,9 @@ async function handleCreateDrive(event) {
         if (currentPath && currentPath !== '') {
             fullName = `${currentPath} | ${name}`;
         }
+        // Si el path está vacío, usar solo el nombre (estamos en la raíz real)
     }
+    // Si no hay elemento seleccionado, usar solo el nombre (crear en la raíz)
     
     // Procesar managers
     const managers = managersInput ? 
